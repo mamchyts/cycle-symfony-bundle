@@ -1,0 +1,10 @@
+parameters:
+    paths:
+        - src/
+    level: 9
+    checkMissingIterableValueType: false
+
+includes:
+    - vendor/phpstan/phpstan-doctrine/extension.neon
+    - vendor/phpstan/phpstan-doctrine/rules.neon
+    - vendor/phpstan/phpstan-strict-rules/rules.neon

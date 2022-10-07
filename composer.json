@@ -1,0 +1,25 @@
+{
+    "name": "mamchyts/cycle-symfony-bundle",
+    "type": "symfony-bundle",
+    "require": {
+        "php": ">=8.1.0",
+        "cycle/annotated": "^3",
+        "cycle/orm": "^2",
+        "cycle/schema-builder": "^2",
+        "symfony/config": "^6.2",
+        "symfony/dependency-injection": "^6.2",
+        "symfony/http-kernel": "^6.2"
+    },
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Cycle\\SymfonyBundle\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Dmitry Mamchyts"
+        }
+    ],
+    "minimum-stability": "dev"
+}
