@@ -4,12 +4,25 @@ declare(strict_types=1);
 
 namespace Cycle\SymfonyBundle\Repository;
 
-use Cycle\ORM\ORMInterface;
+use Cycle\ORM\Select\Repository;
+use Cycle\ORM\{ORMInterface, Select};
 
-class CycleServiceRepository extends \Cycle\ORM\Select\Repository
+/** @phpstan-ignore-next-line */
+class CycleServiceRepository extends Repository
 {
-    public function __construct(ORMInterface $orm, string $entityName)
+    public function __construct(
+        private ORMInterface $orm,
+        private string $entityName
+    ) {
+        parent::__construct($this->createSelect());
+    }
+
+    /** @phpstan-ignore-next-line */
+    private function createSelect(): Select
     {
-        echo '<pre>'; print_r([$orm, $entityName]); echo '</pre>';die();
+        $select = new Select($this->orm, $this->entityName);
+        $select->scope($this->orm->getSource($this->entityName)->getScope());
+
+        return $select;
     }
 }

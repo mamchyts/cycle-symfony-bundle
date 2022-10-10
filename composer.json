@@ -1,25 +1,35 @@
 {
     "name": "mamchyts/cycle-symfony-bundle",
-    "type": "symfony-bundle",
-    "require": {
-        "php": ">=8.1.0",
-        "cycle/annotated": "^3",
-        "cycle/orm": "^2",
-        "cycle/schema-builder": "^2",
-        "symfony/config": "^6.2",
-        "symfony/dependency-injection": "^6.2",
-        "symfony/http-kernel": "^6.2"
-    },
     "license": "MIT",
-    "autoload": {
-        "psr-4": {
-            "Cycle\\SymfonyBundle\\": "src/"
-        }
-    },
+    "type": "symfony-bundle",
     "authors": [
         {
             "name": "Dmitry Mamchyts"
         }
     ],
-    "minimum-stability": "dev"
+    "require": {
+        "php": ">=8.1.0",
+        "cycle/annotated": "^3",
+        "cycle/migrations": "4.x-dev",
+        "cycle/orm": "^2",
+        "cycle/schema-builder": "^2",
+        "cycle/schema-migrations-generator": "3.x-dev",
+        "symfony/config": "^6.1",
+        "symfony/dependency-injection": "^6.1",
+        "symfony/http-kernel": "^6.1"
+    },
+    "require-dev": {
+        "ergebnis/composer-normalize": "dev-main"
+    },
+    "minimum-stability": "dev",
+    "autoload": {
+        "psr-4": {
+            "Cycle\\SymfonyBundle\\": "src/"
+        }
+    },
+    "config": {
+        "allow-plugins": {
+            "ergebnis/composer-normalize": true
+        }
+    }
 }

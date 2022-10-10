@@ -1,5 +1,5 @@
-vendor
+*.code-workspace
+
+vendor/
 composer.lock
 !/**/.gitkeep
-
-*.code-workspace

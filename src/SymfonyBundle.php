@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Cycle\SymfonyBundle;
 
-use Cycle\SymfonyBundle\DependencyInjection\CycleCompilerPass;
 use Symfony\Component\Config\Definition\Configurator\DefinitionConfigurator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
@@ -18,9 +17,11 @@ class SymfonyBundle extends AbstractBundle
 
     public function configure(DefinitionConfigurator $definition): void
     {
+        /** @phpstan-ignore-next-line */
         $definition->rootNode()
             ->children()
                 ->arrayNode('databases')
+                    ->addDefaultChildrenIfNoneSet()
                     ->arrayPrototype()
                         ->children()
                             ->booleanNode('default')->defaultFalse()->end()
@@ -41,6 +42,7 @@ class SymfonyBundle extends AbstractBundle
                     ->end()
                 ->end()
                 ->arrayNode('connections')
+                    ->addDefaultChildrenIfNoneSet()
                     ->arrayPrototype()
                         ->children()
                             ->enumNode('type')->values(['mysql', 'pgsql', 'sqlite', 'sqlsrv'])->end()
@@ -56,22 +58,27 @@ class SymfonyBundle extends AbstractBundle
                     ->end()
                 ->end()
                 ->arrayNode('orm')
-                    ->arrayPrototype()
-                        ->children()
-                            ->scalarNode('dir')->isRequired()->end()
+                    ->children()
+                        ->arrayNode('schema')
+                            ->children()
+                                ->scalarNode('dir')->isRequired()->end()
+                            ->end()
                         ->end()
                     ->end()
                 ->end()
             ->end();
     }
 
-    public function build(ContainerBuilder $container)
-    {
-        $container->addCompilerPass(new CycleCompilerPass());
-    }
+    // public function build(ContainerBuilder $container): void
+    // {
+    //     $container->addCompilerPass(new DatabaseManagerCompilerPass());
+    //     $container->addCompilerPass(new OrmCompilerPass());
+    // }
 
     public function loadExtension(array $config, ContainerConfigurator $container, ContainerBuilder $builder): void
     {
+        $container->import('../config/services.yaml');
+
         $container->parameters()->set(self::CYCLE_PARAMETER_CONFIG, $config);
     }
 }

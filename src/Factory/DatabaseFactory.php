@@ -2,16 +2,58 @@
 
 declare(strict_types=1);
 
-namespace Cycle\SymfonyBundle;
+namespace Cycle\SymfonyBundle\Factory;
 
-use Cycle\Database\Config;
-use Cycle\Database\Config\{ConnectionConfig, DriverConfig};
+use Cycle\Database\Config\{ConnectionConfig, DatabaseConfig, DriverConfig};
+use Cycle\Database\{Config, DatabaseManager, DatabaseProviderInterface};
 use Cycle\SymfonyBundle\Exception\AbstractException;
+use Cycle\SymfonyBundle\SymfonyBundle;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
-class ConnectionFactory
+class DatabaseFactory
 {
-    /** @var AbstractException */
-    public static function createConnectionConfig(array $parameters): ConnectionConfig
+    private array $parameters = [];
+
+    public function __construct(ParameterBagInterface $parameterBag)
+    {
+        /** @var array */
+        $parameters = $parameterBag->get(SymfonyBundle::CYCLE_PARAMETER_CONFIG);
+
+        $this->parameters = $parameters;
+    }
+
+    public function createDatabaseManager(): DatabaseProviderInterface
+    {
+        // detect default connection name
+        $default = null;
+        foreach ($this->parameters['databases'] as $item) {
+            if ($item['default'] === true) {
+                $default = $item['connection'];
+                break;
+            }
+        }
+
+        // DB connection
+        $databases = [];
+        $connections = [];
+        foreach ($this->parameters['connections'] as $key => $connection) {
+            $databases[$key] = ['connection' => $key];
+            $connections[$key] = $this->createDriverConfig(
+                $this->createConnectionConfig($connection)
+            );
+        }
+
+        return new DatabaseManager(
+            new DatabaseConfig([
+                'default' => $default,
+                'databases' => $databases,
+                'connections' => $connections,
+            ])
+        );
+    }
+
+    /** @throws AbstractException */
+    private function createConnectionConfig(array $parameters): ConnectionConfig
     {
         return match ($parameters['type']) {
             'mysql' => self::createMysql($parameters),
@@ -23,8 +65,10 @@ class ConnectionFactory
         };
     }
 
-    public static function createDriverConfig(ConnectionConfig $connectionConfig): DriverConfig
+    /** @phpstan-ignore-next-line */
+    private function createDriverConfig(ConnectionConfig $connectionConfig): DriverConfig
     {
+        /** @phpstan-ignore-next-line */
         return match (true) {
             $connectionConfig instanceof Config\MySQL\ConnectionConfig => new Config\MySQLDriverConfig($connectionConfig),
             $connectionConfig instanceof Config\Postgres\ConnectionConfig => new Config\PostgresDriverConfig($connectionConfig),
@@ -33,8 +77,8 @@ class ConnectionFactory
         };
     }
 
-    /** @var AbstractException */
-    private static function createMysql(array $parameters): ConnectionConfig
+    /** @throws AbstractException */
+    private function createMysql(array $parameters): ConnectionConfig
     {
         // connect by TCP
         if (isset($parameters['database'], $parameters['host'], $parameters['port'])) {
@@ -74,8 +118,8 @@ class ConnectionFactory
         throw new AbstractException('Can not create MySQL connection based on `connections` section in cycle.yaml');
     }
 
-    /** @var AbstractException */
-    private static function createPgsql(array $parameters): ConnectionConfig
+    /** @throws AbstractException */
+    private function createPgsql(array $parameters): ConnectionConfig
     {
         // connect by TCP
         if (isset($parameters['database'], $parameters['host'], $parameters['port'])) {
@@ -102,8 +146,8 @@ class ConnectionFactory
         throw new AbstractException('Can not create Postgres connection based on `connections` section in cycle.yaml');
     }
 
-    /** @var AbstractException */
-    private static function createSqlite(array $parameters): ConnectionConfig
+    /** @throws AbstractException */
+    private function createSqlite(array $parameters): ConnectionConfig
     {
         // connect by DSN
         if (isset($parameters['dsn'])) {
@@ -124,8 +168,8 @@ class ConnectionFactory
         throw new AbstractException('Can not create SQLite connection based on `connections` section in cycle.yaml');
     }
 
-    /** @var AbstractException */
-    private static function createSqlsrv(array $parameters): ConnectionConfig
+    /** @throws AbstractException */
+    private function createSqlsrv(array $parameters): ConnectionConfig
     {
         // connect by DSN
         if (isset($parameters['dsn'])) {
