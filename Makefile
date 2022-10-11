@@ -1,4 +1,4 @@
-SHELL := /bin/bash
+SHELL := /bin/sh
 
 -include .env
 
@@ -28,18 +28,18 @@ check.composer-validate: ## Composer validate
 
 .PHONY: check.php-cs-fixer
 check.php-cs-fixer: ## Run the CS Fixer without fix
-	XDEBUG_MODE=off fpm ./vendor/bin/php-cs-fixer --config=.php-cs-fixer.php --using-cache=no fix --diff --allow-risky=yes --dry-run --verbose
+	XDEBUG_MODE=off ./vendor/bin/php-cs-fixer --config=.php-cs-fixer.php --using-cache=no fix --diff --allow-risky=yes --dry-run --verbose
 
 
 .PHONY: check.php-cs-fixer-fix
 check.php-cs-fixer-fix: ## Run the CS Fixer
-	XDEBUG_MODE=off fpm ./vendor/bin/php-cs-fixer --config=.php-cs-fixer.php --using-cache=no fix --diff --allow-risky=yes
+	XDEBUG_MODE=off ./vendor/bin/php-cs-fixer --config=.php-cs-fixer.php --using-cache=no fix --diff --allow-risky=yes
 
 
 .PHONY: check.phpstan
 check.phpstan: ## Run phpstan analyze
-	XDEBUG_MODE=off fpm ./vendor/bin/phpstan clear-result-cache -n -c phpstan.neon -vvv
-	XDEBUG_MODE=off fpm ./vendor/bin/phpstan analyse -n -c phpstan.neon --memory-limit=512M -vvv
+	XDEBUG_MODE=off ./vendor/bin/phpstan clear-result-cache -n -c phpstan.neon -vvv
+	XDEBUG_MODE=off ./vendor/bin/phpstan analyse -n -c phpstan.neon --memory-limit=512M -vvv
 
 
 .PHONY: check.all
@@ -48,5 +48,5 @@ check.all: check.composer-validate check.php-cs-fixer check.phpstan
 
 .PHONY: tests
 tests: ## Run tests
-	XDEBUG_MODE=off fpm ./vendor/bin/codecept clean
-	XDEBUG_MODE=off fpm ./vendor/bin/codecept build
+	XDEBUG_MODE=off ./vendor/bin/codecept clean
+	XDEBUG_MODE=off ./vendor/bin/codecept build
