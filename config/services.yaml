@@ -4,8 +4,11 @@ services:
         autowire: true
         autoconfigure: true
 
+    Cycle\SymfonyBundle\DependencyInjection\Security\EntityUserProvider: ~
+
     Cycle\SymfonyBundle\Factory\DatabaseFactory: ~
     Cycle\SymfonyBundle\Factory\OrmFactory: ~
+    Cycle\SymfonyBundle\Factory\RepositoryFactory: ~
 
     Cycle\Database\DatabaseProviderInterface:
         factory: ['@Cycle\SymfonyBundle\Factory\DatabaseFactory', 'createDatabaseManager']

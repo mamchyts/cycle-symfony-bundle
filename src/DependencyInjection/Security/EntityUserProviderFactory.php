@@ -8,21 +8,21 @@ use Symfony\Bundle\SecurityBundle\DependencyInjection\Security\UserProvider\User
 use Symfony\Component\Config\Definition\Builder\NodeDefinition;
 use Symfony\Component\DependencyInjection\{ChildDefinition, ContainerBuilder};
 
-class UserProviderFactory implements UserProviderFactoryInterface
+class EntityUserProviderFactory implements UserProviderFactoryInterface
 {
     private string $key;
-    private string $providerId;
+    private string $providerClassName;
 
-    public function __construct(string $key, string $providerId)
+    public function __construct(string $key, string $providerClassName)
     {
         $this->key = $key;
-        $this->providerId = $providerId;
+        $this->providerClassName = $providerClassName;
     }
 
     public function create(ContainerBuilder $container, string $id, array $config): void
     {
         $container
-            ->setDefinition($id, new ChildDefinition($this->providerId))
+            ->setDefinition($id, new ChildDefinition($this->providerClassName))
             ->addArgument($config['class'])
             ->addArgument($config['property']);
     }

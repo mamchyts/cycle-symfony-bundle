@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Cycle\SymfonyBundle;
 
-use Cycle\SymfonyBundle\DependencyInjection\Security\UserProviderFactory;
+use Cycle\SymfonyBundle\DependencyInjection\Compiler\RepositoryPass;
+use Cycle\SymfonyBundle\DependencyInjection\Security\{EntityUserProvider, EntityUserProviderFactory};
+use Cycle\SymfonyBundle\Repository\CycleServiceRepository;
 use Symfony\Bundle\SecurityBundle\DependencyInjection\SecurityExtension;
 use Symfony\Component\Config\Definition\Configurator\DefinitionConfigurator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -49,11 +51,11 @@ class SymfonyBundle extends AbstractBundle
                         ->children()
                             ->enumNode('type')->values(['mysql', 'pgsql', 'sqlite', 'sqlsrv'])->end()
                             ->scalarNode('charset')->defaultNull()->end()
-                            ->scalarNode('database')->defaultValue('db_name')->end()
-                            ->scalarNode('dsn')->defaultValue('mysql:host=127.0.0.1;port=3306;dbname=db_name')->end()
-                            ->scalarNode('host')->defaultValue('127.0.0.1')->end()
-                            ->scalarNode('socket')->defaultValue('/tmp/mysql.sock')->end()
-                            ->integerNode('port')->defaultValue(3306)->end()
+                            ->scalarNode('database')->defaultNull()->end()
+                            ->scalarNode('dsn')->defaultNull()->end()
+                            ->scalarNode('host')->defaultNull()->end()
+                            ->scalarNode('socket')->defaultNull()->end()
+                            ->integerNode('port')->defaultNull()->end()
                             ->scalarNode('user')->defaultValue('root')->end()
                             ->scalarNode('password')->defaultValue('root')->end()
                         ->end()
@@ -63,7 +65,7 @@ class SymfonyBundle extends AbstractBundle
                     ->children()
                         ->arrayNode('schema')
                             ->children()
-                                ->scalarNode('dir')->defaultValue('./src/Entity')->isRequired()->end()
+                                ->scalarNode('dir')->defaultValue('%kernel.project_dir%/src/Entity')->isRequired()->end()
                             ->end()
                         ->end()
                     ->end()
@@ -75,12 +77,17 @@ class SymfonyBundle extends AbstractBundle
     {
         parent::build($container);
 
+        // try load user repositories
+        $container
+            ->registerForAutoconfiguration(CycleServiceRepository::class)
+            ->addTag(RepositoryPass::REPOSITORY_TAG);
+        $container->addCompilerPass(new RepositoryPass());
+
         // try to add `entity` provider into ./config/packages/security.yaml
         if ($container->hasExtension('security')) {
             $security = $container->getExtension('security');
-
             if ($security instanceof SecurityExtension) {
-                $security->addUserProviderFactory(new UserProviderFactory('entity', 'cycle.orm.security.user.provider'));
+                $security->addUserProviderFactory(new EntityUserProviderFactory('entity', EntityUserProvider::class));
             }
         }
     }
