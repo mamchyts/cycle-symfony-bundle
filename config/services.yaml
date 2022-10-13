@@ -6,9 +6,14 @@ services:
 
     Cycle\SymfonyBundle\DependencyInjection\Security\EntityUserProvider: ~
 
-    Cycle\SymfonyBundle\Factory\DatabaseFactory: ~
-    Cycle\SymfonyBundle\Factory\OrmFactory: ~
-    Cycle\SymfonyBundle\Factory\RepositoryFactory: ~
+    Cycle\SymfonyBundle\Command\:
+        resource: '../src/Command/'
+
+    Cycle\SymfonyBundle\Factory\:
+        resource: '../src/Factory/'
+
+    Cycle\SymfonyBundle\Service\:
+        resource: '../src/Service/'
 
     Cycle\Database\DatabaseProviderInterface:
         factory: ['@Cycle\SymfonyBundle\Factory\DatabaseFactory', 'createDatabaseManager']

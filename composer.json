@@ -17,7 +17,8 @@
         "cycle/schema-migrations-generator": "^3",
         "symfony/config": "^6.1",
         "symfony/dependency-injection": "^6.1",
-        "symfony/http-kernel": "^6.1"
+        "symfony/http-kernel": "^6.1",
+        "symfony/filesystem": "^6.1"
     },
     "require-dev": {
         "ergebnis/composer-normalize": "^2.28",

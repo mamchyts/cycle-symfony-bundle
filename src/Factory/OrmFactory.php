@@ -9,33 +9,26 @@ use Cycle\Database\DatabaseProviderInterface;
 use Cycle\ORM\{Factory, ORM, ORMInterface, Schema};
 use Cycle\Schema\Generator\{GenerateModifiers, GenerateRelations, GenerateTypecast, RenderModifiers, RenderRelations, RenderTables, ResetTables, ValidateEntities};
 use Cycle\Schema\{Compiler, Registry};
-use Cycle\SymfonyBundle\SymfonyBundle;
-use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
+use Cycle\SymfonyBundle\Service\ConfigService;
 
 class OrmFactory
 {
-    private array $parameters = [];
-
     public function __construct(
-        private DatabaseProviderInterface $databaseManager,
-        ParameterBagInterface $parameterBag
+        private ConfigService $configService,
+        private DatabaseProviderInterface $dbal
     ) {
-        /** @var array */
-        $parameters = $parameterBag->get(SymfonyBundle::CYCLE_PARAMETER_CONFIG);
-
-        $this->parameters = $parameters;
     }
 
     public function createOrm(): ORMInterface
     {
         // load classes Entities/Repositories
-        $finder = (new \Symfony\Component\Finder\Finder())->files()->in($this->parameters['orm']['schema']['dir']);
+        $finder = (new \Symfony\Component\Finder\Finder())->files()->in($this->configService->getConfigs()['orm']['schema']['directory']);
         $classLocator = new \Spiral\Tokenizer\ClassLocator($finder);
         $classLocator->getClasses();
 
         // generate DB schema
         $schema = (new Compiler())->compile(
-            new Registry($this->databaseManager),
+            new Registry($this->dbal),
             [
                 new ResetTables(),             // re-declared table schemas (remove columns)
                 new Embeddings($classLocator), // register embeddable entities
@@ -54,7 +47,7 @@ class OrmFactory
         );
 
         return new ORM(
-            new Factory($this->databaseManager),
+            new Factory($this->dbal),
             new Schema($schema)
         );
     }
