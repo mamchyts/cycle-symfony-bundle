@@ -27,13 +27,14 @@ class EntityUserProviderFactory implements UserProviderFactoryInterface
             ->addArgument($config['property']);
     }
 
-    public function getKey()
+    public function getKey(): string
     {
         return $this->key;
     }
 
     public function addConfiguration(NodeDefinition $node): void
     {
+        /** @phpstan-ignore-next-line */
         $node
             ->children()
                 ->scalarNode('class')

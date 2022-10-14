@@ -18,10 +18,10 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 #[AsCommand(
-    name: 'cycle:migration:diff',
-    description: 'Generate a diff migration between your current database and mapping information',
+    name: 'cycle:migration:migrate',
+    description: 'Run migration process between your current database and mapping information',
 )]
-class MigrationDiffCommand extends Command
+class MigrationMigrateCommand extends Command
 {
     public function __construct(
         private DatabaseProviderInterface $dbal,
@@ -47,13 +47,12 @@ class MigrationDiffCommand extends Command
         );
         $migrator->configure();
 
-        $migrationRepository = $migrator->getRepository();
-        $generator = new GenerateMigrations($migrationRepository, $migrator->getConfig());
-
         $io = new SymfonyStyle($input, $output);
 
         try {
-            $generator->run($this->registry);
+            while (($migration = $migrator->run()) !== null) {
+                $io->success('Migrate ' . $migration->getState()->getName());
+            }
         } catch (\Throwable $th) {
             $io->error($th->getMessage());
 

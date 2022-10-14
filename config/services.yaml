@@ -12,6 +12,9 @@ services:
     Cycle\SymfonyBundle\Factory\:
         resource: '../src/Factory/'
 
+    Cycle\SymfonyBundle\Migration\:
+        resource: '../src/Migration/'
+
     Cycle\SymfonyBundle\Service\:
         resource: '../src/Service/'
 
@@ -20,3 +23,5 @@ services:
 
     Cycle\ORM\ORMInterface:
         factory: ['@Cycle\SymfonyBundle\Factory\OrmFactory', 'createOrm']
+
+    Cycle\Schema\Registry: ~

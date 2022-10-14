@@ -15,7 +15,8 @@ class OrmFactory
 {
     public function __construct(
         private ConfigService $configService,
-        private DatabaseProviderInterface $dbal
+        private DatabaseProviderInterface $dbal,
+        private Registry $registry
     ) {
     }
 
@@ -24,11 +25,10 @@ class OrmFactory
         // load classes Entities/Repositories
         $finder = (new \Symfony\Component\Finder\Finder())->files()->in($this->configService->getConfigs()['orm']['schema']['directory']);
         $classLocator = new \Spiral\Tokenizer\ClassLocator($finder);
-        $classLocator->getClasses();
 
         // generate DB schema
         $schema = (new Compiler())->compile(
-            new Registry($this->dbal),
+            $this->registry,
             [
                 new ResetTables(),             // re-declared table schemas (remove columns)
                 new Embeddings($classLocator), // register embeddable entities

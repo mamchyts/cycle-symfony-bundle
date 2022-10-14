@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Cycle\SymfonyBundle\DependencyInjection\Compiler;
 
 use Cycle\ORM\ORMInterface;
+use Cycle\SymfonyBundle\Exception\AbstractException;
 use Cycle\SymfonyBundle\Factory\RepositoryFactory;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\{ContainerBuilder, Reference};
@@ -19,10 +20,15 @@ class RepositoryPass implements CompilerPassInterface
             ->findTaggedServiceIds(self::REPOSITORY_TAG);
 
         foreach (array_keys($services) as $repositoryClassName) {
+            $callback = [$repositoryClassName, 'getEntityClass'];
+            if (!\is_callable($callback)) {
+                throw new AbstractException('Invalid callback for repository: ' . $repositoryClassName);
+            }
+
             $container->register($repositoryClassName, $repositoryClassName)
                 ->setFactory([new Reference(RepositoryFactory::class), 'create'])
                 ->addArgument(new Reference(ORMInterface::class))
-                ->addArgument(\call_user_func_array([$repositoryClassName, 'getEntityClass'], []));
+                ->addArgument(\call_user_func_array($callback, []));
         }
     }
 }

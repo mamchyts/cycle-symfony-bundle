@@ -11,6 +11,7 @@ class RepositoryFactory
 {
     public static function create(ORMInterface $orm, string $entityClassName): CycleServiceRepository
     {
+        /** @phpstan-ignore-next-line */
         return $orm->getRepository($entityClassName);
     }
 }
