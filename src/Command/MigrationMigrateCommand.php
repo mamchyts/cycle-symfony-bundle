@@ -7,7 +7,6 @@ namespace Cycle\SymfonyBundle\Command;
 use Cycle\Database\DatabaseProviderInterface;
 use Cycle\Migrations\Migrator;
 use Cycle\ORM\ORMInterface;
-use Cycle\Schema\Generator\Migrations\GenerateMigrations;
 use Cycle\Schema\Registry;
 use Cycle\SymfonyBundle\Migration\FileRepository;
 use Cycle\SymfonyBundle\Service\MigrationService;
@@ -27,8 +26,7 @@ class MigrationMigrateCommand extends Command
         private DatabaseProviderInterface $dbal,
         private FileRepository $fileRepository,
         private MigrationService $migrationService,
-        private ORMInterface $orm,
-        private Registry $registry
+        private ORMInterface $orm
     ) {
         parent::__construct();
     }

@@ -1,0 +1,26 @@
+version: '3.9'
+
+
+services:
+    fpm:
+        build:
+            context: ./
+            dockerfile: ./.docker/fpm/Dockerfile
+        ports:
+            - 9000:9000
+        restart: always
+        volumes:
+            - ./:/var/www/html
+        deploy:
+            resources:
+                limits:
+                    cpus: '1'
+                    memory: 512M
+
+
+networks:
+    default:
+        driver: bridge
+        ipam:
+            config:
+                - subnet: 172.10.10.0/24
