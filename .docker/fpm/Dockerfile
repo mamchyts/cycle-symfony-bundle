@@ -33,14 +33,14 @@ COPY ./.docker/fpm/php.ini /usr/local/etc/php/conf.d/php.ini
 COPY ./ /var/www/html
 WORKDIR /var/www/html
 
-# remove unused folders/files and update permissions
-RUN rm .docker/ -Rf
-RUN chown -R www-data:www-data /var/www/html
-
 # !!! ONLY FOR DEV ENV: install composer
 RUN wget https://getcomposer.org/download/2.4.2/composer.phar && \
     chmod +x composer.phar && \
     php -r "if (hash_file('sha256', 'composer.phar') !== '8fe98a01050c92cc6812b8ead3bd5b6e0bcdc575ce7a93b242bde497a31d7732') { echo 'Invalid composer checksum'; unlink('composer.phar'); } echo PHP_EOL;" && \
     mv composer.phar /usr/local/bin/composer
+
+# remove unused folders/files and update permissions
+RUN rm .docker/ -Rf
+RUN chown -R www-data:www-data /var/www/html
 
 USER www-data
