@@ -7,7 +7,6 @@ namespace Cycle\SymfonyBundle\Command;
 use Cycle\Database\DatabaseProviderInterface;
 use Cycle\Migrations\Migrator;
 use Cycle\ORM\ORMInterface;
-use Cycle\Schema\Registry;
 use Cycle\SymfonyBundle\Migration\FileRepository;
 use Cycle\SymfonyBundle\Service\MigrationService;
 use Symfony\Component\Console\Attribute\AsCommand;
