@@ -18,7 +18,7 @@ class FileService
 
     public function generateClassName(): string
     {
-        return 'Migration' . time();
+        return 'Migration' . number_format(microtime(true) * 1000000, 0, '.', '');
     }
 
     public function getEmptyMigration(string $className, string $database): string

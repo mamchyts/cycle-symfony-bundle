@@ -84,7 +84,9 @@ final class FileRepository implements RepositoryInterface
             $reflection = new ReflectionFile($filename);
 
             $fileInfo = pathinfo($reflection->getFilename());
-            $timestampFromName = str_replace('Migration', '', $fileInfo['filename']);
+
+            $timestampInMicrosecondsFromName = str_replace('Migration', '', $fileInfo['filename']);
+            $timestampFromName = (string) (int) ($timestampInMicrosecondsFromName / 1000000);
 
             $created = \DateTimeImmutable::createFromFormat('U', $timestampFromName);
             if ($created === false) {
