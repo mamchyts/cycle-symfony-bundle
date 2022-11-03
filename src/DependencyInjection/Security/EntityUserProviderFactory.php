@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace Cycle\SymfonyBundle\DependencyInjection\Security;
 
+use Cycle\ORM\ORMInterface;
 use Symfony\Bundle\SecurityBundle\DependencyInjection\Security\UserProvider\UserProviderFactoryInterface;
 use Symfony\Component\Config\Definition\Builder\NodeDefinition;
-use Symfony\Component\DependencyInjection\{ChildDefinition, ContainerBuilder};
+use Symfony\Component\DependencyInjection\{ChildDefinition, ContainerBuilder, Reference};
 
 class EntityUserProviderFactory implements UserProviderFactoryInterface
 {
@@ -19,10 +20,11 @@ class EntityUserProviderFactory implements UserProviderFactoryInterface
         $this->providerClassName = $providerClassName;
     }
 
-    public function create(ContainerBuilder $container, string $id, array $config): void
+    public function create(ContainerBuilder $containerBuilder, string $id, array $config): void
     {
-        $container
+        $containerBuilder
             ->setDefinition($id, new ChildDefinition($this->providerClassName))
+            ->addArgument(new Reference(ORMInterface::class))
             ->addArgument($config['class'])
             ->addArgument($config['property']);
     }

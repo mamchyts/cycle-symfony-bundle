@@ -9,9 +9,7 @@ use Cycle\Migrations\{RepositoryInterface, State};
 use Spiral\Core\{Container, FactoryInterface};
 use Spiral\Tokenizer\Reflection\ReflectionFile;
 
-/**
- * Stores migrations as files.
- */
+// @todo this class is a copy/paste from Cycle\Migrations\FileRepository but with own folder/files structure
 final class FileRepository implements RepositoryInterface
 {
     private FactoryInterface $factory;

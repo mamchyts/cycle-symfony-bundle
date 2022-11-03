@@ -4,38 +4,29 @@ declare(strict_types=1);
 
 namespace Cycle\SymfonyBundle\DependencyInjection\Security;
 
-use Doctrine\Persistence\Mapping\ClassMetadata;
-use Doctrine\Persistence\{ManagerRegistry, ObjectManager, ObjectRepository};
+use Cycle\ORM\{ORMInterface, RepositoryInterface};
+use Cycle\SymfonyBundle\Exception\AbstractException;
 use Symfony\Component\Security\Core\Exception\{UnsupportedUserException, UserNotFoundException};
 use Symfony\Component\Security\Core\User\{PasswordAuthenticatedUserInterface, PasswordUpgraderInterface, UserInterface, UserProviderInterface};
 
 class EntityUserProvider implements UserProviderInterface, PasswordUpgraderInterface
 {
-    private ManagerRegistry $registry;
-    private ?string $managerName;
-    private string $classOrAlias;
-    private string $class;
-    private ?string $property;
-
-    public function __construct()
-    {
+    public function __construct(
+        private ORMInterface $orm,
+        private string $class,
+        private string $property,
+    ) {
     }
 
     public function loadUserByIdentifier(string $identifier): UserInterface
     {
         $repository = $this->getRepository();
-        if ($this->property !== null) {
-            $user = $repository->findOneBy([$this->property => $identifier]);
-        } else {
-            if (!$repository instanceof UserLoaderInterface) {
-                throw new \InvalidArgumentException(sprintf('You must either make the "%s" entity Doctrine Repository ("%s") implement "Symfony\Bridge\Doctrine\Security\User\UserLoaderInterface" or set the "property" option in the corresponding entity provider configuration.', $this->classOrAlias, get_debug_type($repository)));
-            }
 
-            $user = $repository->loadUserByIdentifier($identifier);
-        }
+        /** @var UserInterface|null */
+        $user = $repository->findOne([$this->property => $identifier]);
 
         if ($user === null) {
-            $e = new UserNotFoundException(sprintf('User "%s" not found.', $identifier));
+            $e = new UserNotFoundException('User with identifier "' . $identifier . '" not found');
             $e->setUserIdentifier($identifier);
 
             throw $e;
@@ -49,9 +40,8 @@ class EntityUserProvider implements UserProviderInterface, PasswordUpgraderInter
      */
     public function refreshUser(UserInterface $user): UserInterface
     {
-        $class = $this->getClass();
-        if (!$user instanceof $class) {
-            throw new UnsupportedUserException(sprintf('Instances of "%s" are not supported.', get_debug_type($user)));
+        if (!$user instanceof $this->class) {
+            throw new UnsupportedUserException('Instances of "' . get_debug_type($user) . '" are not supported.');
         }
 
         $repository = $this->getRepository();
@@ -62,14 +52,13 @@ class EntityUserProvider implements UserProviderInterface, PasswordUpgraderInter
             // might have changed without proper persistence in the database.
             // That's the case when the user has been changed by a form with
             // validation errors.
-            if (!$id = $this->getClassMetadata()->getIdentifierValues($user)) {
-                throw new \InvalidArgumentException('You cannot refresh a user from the EntityUserProvider that does not contain an identifier. The user object has to be serialized with its own identifier mapped by Doctrine.');
-            }
+            $id = $this->getUserPkValue($user);
 
-            $refreshedUser = $repository->find($id);
+            /** @var UserInterface|null */
+            $refreshedUser = $repository->findByPK($id);
             if ($refreshedUser === null) {
-                $e = new UserNotFoundException('User with id ' . json_encode($id) . ' not found.');
-                $e->setUserIdentifier(json_encode($id));
+                $e = new UserNotFoundException('User with id "' . $id . '" not found');
+                $e->setUserIdentifier((string) $id);
 
                 throw $e;
             }
@@ -83,19 +72,16 @@ class EntityUserProvider implements UserProviderInterface, PasswordUpgraderInter
      */
     public function supportsClass(string $class): bool
     {
-        return $class === $this->getClass() || is_subclass_of($class, $this->getClass());
+        return $class === $this->class || is_subclass_of($class, $this->class);
     }
 
     /**
      * {@inheritdoc}
-     *
-     * @final
      */
     public function upgradePassword(PasswordAuthenticatedUserInterface $user, string $newHashedPassword): void
     {
-        $class = $this->getClass();
-        if (!$user instanceof $class) {
-            throw new UnsupportedUserException(sprintf('Instances of "%s" are not supported.', get_debug_type($user)));
+        if (!$user instanceof $this->class) {
+            throw new UnsupportedUserException('Instances of "' . get_debug_type($user) . '" are not supported');
         }
 
         $repository = $this->getRepository();
@@ -104,33 +90,15 @@ class EntityUserProvider implements UserProviderInterface, PasswordUpgraderInter
         }
     }
 
-    private function getObjectManager(): ObjectManager
+    private function getRepository(): RepositoryInterface
     {
-        return $this->registry->getManager($this->managerName);
+        /** @phpstan-ignore-next-line */
+        return $this->orm->getRepository($this->class);
     }
 
-    private function getRepository(): ObjectRepository
+    private function getUserPkValue(UserInterface $user): string|int
     {
-        return $this->getObjectManager()->getRepository($this->classOrAlias);
-    }
-
-    private function getClass(): string
-    {
-        if (!isset($this->class)) {
-            $class = $this->classOrAlias;
-
-            if (str_contains($class, ':')) {
-                $class = $this->getClassMetadata()->getName();
-            }
-
-            $this->class = $class;
-        }
-
-        return $this->class;
-    }
-
-    private function getClassMetadata(): ClassMetadata
-    {
-        return $this->getObjectManager()->getClassMetadata($this->classOrAlias);
+        // @toto find new method for detection if PK value
+        return method_exists($user, 'getId') ? $user->getId() : throw new AbstractException('Can not get PK value');
     }
 }

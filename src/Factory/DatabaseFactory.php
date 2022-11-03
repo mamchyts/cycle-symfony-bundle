@@ -65,7 +65,6 @@ class DatabaseFactory
         };
     }
 
-    /** @phpstan-ignore-next-line */
     private function createDriverConfig(ConnectionConfig $connectionConfig): DriverConfig
     {
         /** @phpstan-ignore-next-line */
