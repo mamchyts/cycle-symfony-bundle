@@ -7,6 +7,7 @@ namespace Cycle\SymfonyBundle\Factory;
 use Cycle\Annotated\{Embeddings, Entities, MergeColumns, MergeIndexes, TableInheritance};
 use Cycle\Database\DatabaseProviderInterface;
 use Cycle\ORM\{Factory, ORM, ORMInterface, Schema};
+use Cycle\ORM\Collection\DoctrineCollectionFactory;
 use Cycle\Schema\Generator\{GenerateModifiers, GenerateRelations, GenerateTypecast, RenderModifiers, RenderRelations, RenderTables, ResetTables, ValidateEntities};
 use Cycle\Schema\{Compiler, Registry};
 use Cycle\SymfonyBundle\Service\ConfigService;
@@ -47,7 +48,10 @@ class OrmFactory
         );
 
         return new ORM(
-            new Factory($this->dbal),
+            new Factory(
+                dbal: $this->dbal,
+                defaultCollectionFactory: new DoctrineCollectionFactory(),
+            ),
             new Schema($schema),
         );
     }
