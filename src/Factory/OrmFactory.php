@@ -6,8 +6,8 @@ namespace Cycle\SymfonyBundle\Factory;
 
 use Cycle\Annotated\{Embeddings, Entities, MergeColumns, MergeIndexes, TableInheritance};
 use Cycle\Database\DatabaseProviderInterface;
-use Cycle\ORM\{Factory, ORM, ORMInterface, Schema};
 use Cycle\ORM\Collection\DoctrineCollectionFactory;
+use Cycle\ORM\{Factory, ORM, ORMInterface, Schema};
 use Cycle\Schema\Generator\{GenerateModifiers, GenerateRelations, GenerateTypecast, RenderModifiers, RenderRelations, RenderTables, ResetTables, ValidateEntities};
 use Cycle\Schema\{Compiler, Registry};
 use Cycle\SymfonyBundle\Service\ConfigService;
