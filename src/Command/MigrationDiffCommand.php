@@ -28,7 +28,7 @@ class MigrationDiffCommand extends Command
         private FileRepository $fileRepository,
         private MigrationService $migrationService,
         private ORMInterface $orm,
-        private Registry $registry
+        private Registry $registry,
     ) {
         parent::__construct();
     }
@@ -43,7 +43,7 @@ class MigrationDiffCommand extends Command
         $migrator = new Migrator(
             $migrationConfig,
             $this->dbal,
-            $this->fileRepository
+            $this->fileRepository,
         );
         $migrator->configure();
 

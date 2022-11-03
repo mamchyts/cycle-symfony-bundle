@@ -80,7 +80,7 @@ return (new PhpCsFixer\Config())
         ],
         'trailing_comma_in_multiline' => [
             'after_heredoc' => true,
-            'elements' => ['arrays'],
+            'elements' => ['arguments', 'arrays', 'match', 'parameters'],
         ],
     ])
     ->setFinder($finder);

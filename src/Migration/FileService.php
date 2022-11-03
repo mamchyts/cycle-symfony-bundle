@@ -12,7 +12,7 @@ class FileService
 {
     public function __construct(
         private ConfigService $configService,
-        private Filesystem $filesystem
+        private Filesystem $filesystem,
     ) {
     }
 
@@ -61,7 +61,7 @@ class FileService
         $body = preg_replace(
             '/class (.*) extends Migration/i',
             'class ' . $newClassName . ' extends Migration',
-            $body
+            $body,
         );
 
         return $body;
@@ -76,7 +76,7 @@ class FileService
                 '<database>' => $database,
                 '<up>' => $up,
                 '<down>' => $down,
-            ]
+            ],
         );
     }
 

@@ -14,13 +14,13 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 #[AsCommand(
     name: 'cycle:migration:generate',
-    description: 'Generate a blank migration class'
+    description: 'Generate a blank migration class',
 )]
 class MigrationGenerateCommand extends Command
 {
     public function __construct(
         private ConfigService $configService,
-        private FileService $fileService
+        private FileService $fileService,
     ) {
         parent::__construct();
     }

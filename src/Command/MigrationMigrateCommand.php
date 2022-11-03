@@ -25,7 +25,7 @@ class MigrationMigrateCommand extends Command
         private DatabaseProviderInterface $dbal,
         private FileRepository $fileRepository,
         private MigrationService $migrationService,
-        private ORMInterface $orm
+        private ORMInterface $orm,
     ) {
         parent::__construct();
     }
@@ -40,7 +40,7 @@ class MigrationMigrateCommand extends Command
         $migrator = new Migrator(
             $migrationConfig,
             $this->dbal,
-            $this->fileRepository
+            $this->fileRepository,
         );
         $migrator->configure();
 

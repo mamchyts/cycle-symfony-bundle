@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace Cycle\SymfonyBundle;
 
-use Cycle\SymfonyBundle\DependencyInjection\Compiler\RepositoryPass;
+use Cycle\SymfonyBundle\DependencyInjection\Compiler\{FixturePass, RepositoryPass};
 use Cycle\SymfonyBundle\DependencyInjection\Security\{EntityUserProvider, EntityUserProviderFactory};
+use Cycle\SymfonyBundle\Fixture\AbstractFixture;
 use Cycle\SymfonyBundle\Repository\CycleServiceRepository;
 use Symfony\Bundle\SecurityBundle\DependencyInjection\SecurityExtension;
 use Symfony\Component\Config\Definition\Configurator\DefinitionConfigurator;
@@ -84,11 +85,7 @@ class SymfonyBundle extends AbstractBundle
     {
         parent::build($container);
 
-        // try load user repositories
-        $container
-            ->registerForAutoconfiguration(CycleServiceRepository::class)
-            ->addTag(RepositoryPass::REPOSITORY_TAG);
-        $container->addCompilerPass(new RepositoryPass());
+        $this->addCompilerPass($container);
 
         // try to add `entity` provider into ./config/packages/security.yaml
         if ($container->hasExtension('security')) {
@@ -104,5 +101,20 @@ class SymfonyBundle extends AbstractBundle
         $container->import('../config/services.yaml');
 
         $container->parameters()->set(self::CYCLE_PARAMETER_CONFIG, $config);
+    }
+
+    private function addCompilerPass(ContainerBuilder $container): void
+    {
+        // autoload user repositories
+        $container
+            ->registerForAutoconfiguration(CycleServiceRepository::class)
+            ->addTag(RepositoryPass::REPOSITORY_TAG);
+        $container->addCompilerPass(new RepositoryPass());
+
+        // autoload user fixtures
+        $container
+            ->registerForAutoconfiguration(AbstractFixture::class)
+            ->addTag(FixturePass::FIXTURE_TAG);
+        $container->addCompilerPass(new FixturePass());
     }
 }

@@ -21,6 +21,9 @@ services:
     Cycle\Database\DatabaseProviderInterface:
         factory: ['@Cycle\SymfonyBundle\Factory\DatabaseFactory', 'createDatabaseManager']
 
+    Cycle\ORM\EntityManagerInterface:
+        class: Cycle\ORM\EntityManager
+
     Cycle\ORM\ORMInterface:
         factory: ['@Cycle\SymfonyBundle\Factory\OrmFactory', 'createOrm']
 

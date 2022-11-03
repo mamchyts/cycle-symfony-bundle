@@ -39,7 +39,7 @@ class DatabaseFactory
         foreach ($this->parameters['connections'] as $key => $connection) {
             $databases[$key] = ['connection' => $key];
             $connections[$key] = $this->createDriverConfig(
-                $this->createConnectionConfig($connection)
+                $this->createConnectionConfig($connection),
             );
         }
 
@@ -48,7 +48,7 @@ class DatabaseFactory
                 'default' => $default,
                 'databases' => $databases,
                 'connections' => $connections,
-            ])
+            ]),
         );
     }
 
@@ -89,7 +89,7 @@ class DatabaseFactory
                 charset: $parameters['charset'],
                 user: $parameters['user'],
                 password: $parameters['password'],
-                options: $parameters['options'] ?? []
+                options: $parameters['options'] ?? [],
             );
         }
 
@@ -99,7 +99,7 @@ class DatabaseFactory
                 dsn: $parameters['dsn'],
                 user: $parameters['user'],
                 password: $parameters['password'],
-                options: $parameters['options'] ?? []
+                options: $parameters['options'] ?? [],
             );
         }
 
@@ -111,7 +111,7 @@ class DatabaseFactory
                 charset: $parameters['charset'],
                 user: $parameters['user'],
                 password: $parameters['password'],
-                options: $parameters['options'] ?? []
+                options: $parameters['options'] ?? [],
             );
         }
 
@@ -129,7 +129,7 @@ class DatabaseFactory
                 port: $parameters['port'],
                 user: $parameters['user'],
                 password: $parameters['password'],
-                options: $parameters['options'] ?? []
+                options: $parameters['options'] ?? [],
             );
         }
 
@@ -139,7 +139,7 @@ class DatabaseFactory
                 dsn: $parameters['dsn'],
                 user: $parameters['user'],
                 password: $parameters['password'],
-                options: $parameters['options'] ?? []
+                options: $parameters['options'] ?? [],
             );
         }
 
@@ -153,7 +153,7 @@ class DatabaseFactory
         if (isset($parameters['dsn'])) {
             return new Config\SQLite\DsnConnectionConfig(
                 dsn: $parameters['dsn'],
-                options: $parameters['options'] ?? []
+                options: $parameters['options'] ?? [],
             );
         }
 
@@ -161,7 +161,7 @@ class DatabaseFactory
         if (isset($parameters['database'])) {
             return new Config\SQLite\FileConnectionConfig(
                 database: $parameters['database'],
-                options: $parameters['options'] ?? []
+                options: $parameters['options'] ?? [],
             );
         }
 
@@ -177,7 +177,7 @@ class DatabaseFactory
                 dsn: $parameters['dsn'],
                 user: $parameters['user'],
                 password: $parameters['password'],
-                options: $parameters['options'] ?? []
+                options: $parameters['options'] ?? [],
             );
         }
 
@@ -189,7 +189,7 @@ class DatabaseFactory
                 port: $parameters['port'],
                 user: $parameters['user'],
                 password: $parameters['password'],
-                options: $parameters['options'] ?? []
+                options: $parameters['options'] ?? [],
             );
         }
 

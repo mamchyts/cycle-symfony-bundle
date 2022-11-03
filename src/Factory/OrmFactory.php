@@ -16,7 +16,7 @@ class OrmFactory
     public function __construct(
         private ConfigService $configService,
         private DatabaseProviderInterface $dbal,
-        private Registry $registry
+        private Registry $registry,
     ) {
     }
 
@@ -43,12 +43,12 @@ class OrmFactory
                 new RenderModifiers(),         // render all schema modifiers
                 new MergeIndexes(),            // add @Table column declarations
                 new GenerateTypecast(),        // typecast non string columns
-            ]
+            ],
         );
 
         return new ORM(
             new Factory($this->dbal),
-            new Schema($schema)
+            new Schema($schema),
         );
     }
 }

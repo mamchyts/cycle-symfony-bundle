@@ -25,7 +25,8 @@ class RepositoryPass implements CompilerPassInterface
                 throw new AbstractException('Invalid callback for repository: ' . $repositoryClassName);
             }
 
-            $container->register($repositoryClassName, $repositoryClassName)
+            $container
+                ->register($repositoryClassName, $repositoryClassName)
                 ->setFactory([new Reference(RepositoryFactory::class), 'create'])
                 ->addArgument(new Reference(ORMInterface::class))
                 ->addArgument(\call_user_func_array($callback, []));
