@@ -35,7 +35,7 @@ class MigrationDiffCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        // HACK for getting correct Registry object after scheme compilation
+        // @todo HACK for getting correct Registry object after scheme compilation
         unset($this->orm);
 
         $migrationConfig = $this->migrationService->getMigrationConfig();
