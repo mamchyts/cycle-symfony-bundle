@@ -36,6 +36,7 @@ class MigrationDiffCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         // @todo HACK for getting correct Registry object after scheme compilation
+        // more into in OrmFactory::createOrm() - general point in $classLocator (we must load classes Entities/Repositories)
         unset($this->orm);
 
         $migrationConfig = $this->migrationService->getMigrationConfig();
